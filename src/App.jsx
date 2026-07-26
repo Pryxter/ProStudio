@@ -13,6 +13,7 @@ import {
   onSnapshot,
   query,
   serverTimestamp,
+  Timestamp,
   updateDoc,
   where,
 } from "firebase/firestore";
@@ -42,6 +43,13 @@ function getEntryTimestamp(entry) {
   return entry.checkIn?.toDate ? entry.checkIn.toDate().getTime() : 0;
 }
 
+function getFixedCheckoutDate(entry) {
+  if (!entry.checkIn?.toDate) return null;
+  const checkoutDate = entry.checkIn.toDate();
+  checkoutDate.setHours(15, 30, 0, 0);
+  return checkoutDate;
+}
+
 function formatDate(timestamp) {
   if (!timestamp?.toDate) return "--";
   return timestamp.toDate().toLocaleDateString("es-US", {
@@ -54,6 +62,17 @@ function formatDate(timestamp) {
 function formatTime(timestamp) {
   if (!timestamp?.toDate) return "--";
   return timestamp.toDate().toLocaleTimeString("es-US", {
+    hour: "numeric",
+    minute: "2-digit",
+  });
+}
+
+function formatDateTime(timestamp) {
+  if (!timestamp?.toDate) return "--";
+  return timestamp.toDate().toLocaleString("es-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
     hour: "numeric",
     minute: "2-digit",
   });
@@ -281,6 +300,39 @@ function Dashboard({ user }) {
     }
   }
 
+  async function handleWednesdayCheckout() {
+    if (!db || !openEntry) {
+      setError("Necesitas tener un turno abierto para usar Wednesday.");
+      return;
+    }
+
+    const fixedCheckoutDate = getFixedCheckoutDate(openEntry);
+    if (!fixedCheckoutDate) {
+      setError("Espera unos segundos a que se confirme tu Check-In.");
+      return;
+    }
+
+    setActionLoading(true);
+    setError("");
+
+    try {
+      await updateDoc(doc(db, "timeEntries", openEntry.id), {
+        checkOut: Timestamp.fromDate(fixedCheckoutDate),
+        breakMinutes: BREAK_MINUTES,
+        checkOutType: "wednesday-fixed",
+        status: "completed",
+      });
+    } catch {
+      setError("No se pudo guardar el Wednesday Check-Out. Intentalo otra vez.");
+    } finally {
+      setActionLoading(false);
+    }
+  }
+
+  function handlePrint() {
+    window.print();
+  }
+
   return (
     <div className="app-shell">
       <nav className="navbar">
@@ -322,18 +374,28 @@ function Dashboard({ user }) {
                 ? `Entrada: ${formatTime(openEntry.checkIn)}`
                 : "Listo para iniciar"}
             </span>
-            <button
-              className="primary-button"
-              disabled={actionLoading}
-              onClick={handleCheckToggle}
-              type="button"
-            >
-              {actionLoading
-                ? "Guardando..."
-                : openEntry
-                  ? "Check-Out"
-                  : "Check-In"}
-            </button>
+            <div className="action-buttons">
+              <button
+                className="primary-button"
+                disabled={actionLoading}
+                onClick={handleCheckToggle}
+                type="button"
+              >
+                {actionLoading
+                  ? "Guardando..."
+                  : openEntry
+                    ? "Check-Out"
+                    : "Check-In"}
+              </button>
+              <button
+                className="secondary-button"
+                disabled={actionLoading || !openEntry}
+                onClick={handleWednesdayCheckout}
+                type="button"
+              >
+                Wednesday
+              </button>
+            </div>
           </article>
         </section>
 
@@ -341,8 +403,18 @@ function Dashboard({ user }) {
 
         <section className="history-section" aria-labelledby="history-title">
           <div className="section-heading">
-            <p className="eyebrow">Mi historial</p>
-            <h2 id="history-title">Horas registradas</h2>
+            <div>
+              <p className="eyebrow">Mi historial</p>
+              <h2 id="history-title">Horas registradas</h2>
+            </div>
+            <button
+              className="secondary-button print-button"
+              disabled={entries.length === 0}
+              onClick={handlePrint}
+              type="button"
+            >
+              Imprimir
+            </button>
           </div>
 
           {loading ? (
@@ -376,6 +448,10 @@ function Dashboard({ user }) {
                       <dd>{formatTime(entry.checkOut)}</dd>
                     </div>
                     <div>
+                      <dt>Break</dt>
+                      <dd>{entry.checkOut ? `${entry.breakMinutes ?? BREAK_MINUTES} min` : "--"}</dd>
+                    </div>
+                    <div>
                       <dt>Pagadas</dt>
                       <dd>{currencyFormatter.format(getEntryHours(entry))}</dd>
                     </div>
@@ -384,6 +460,35 @@ function Dashboard({ user }) {
               ))}
             </div>
           )}
+        </section>
+
+        <section className="print-report" aria-label="Reporte imprimible">
+          <h1>Pro Studio</h1>
+          <p>Employee Check-in Check-Out</p>
+          <p>Empleado: {user.displayName || user.email}</p>
+          <p>Total de horas pagadas: {currencyFormatter.format(totalHours)} h</p>
+          <table>
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Entrada</th>
+                <th>Salida</th>
+                <th>Break</th>
+                <th>Horas</th>
+              </tr>
+            </thead>
+            <tbody>
+              {entries.map((entry) => (
+                <tr key={`print-${entry.id}`}>
+                  <td>{formatDate(entry.checkIn)}</td>
+                  <td>{formatDateTime(entry.checkIn)}</td>
+                  <td>{formatDateTime(entry.checkOut)}</td>
+                  <td>{entry.checkOut ? `${entry.breakMinutes ?? BREAK_MINUTES} min` : "--"}</td>
+                  <td>{currencyFormatter.format(getEntryHours(entry))}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </section>
       </main>
 

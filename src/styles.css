@@ -155,6 +155,7 @@ input:focus {
 
 .primary-button,
 .ghost-button,
+.secondary-button,
 .text-button {
   border: 0;
   border-radius: 8px;
@@ -171,6 +172,19 @@ input:focus {
 
 .primary-button:hover {
   background: #245855;
+}
+
+.secondary-button {
+  background: #eef3ef;
+  border: 1px solid #cad7d0;
+  color: #183b3f;
+  min-height: 50px;
+  padding: 0 18px;
+  width: 100%;
+}
+
+.secondary-button:hover {
+  background: #e1ebe5;
 }
 
 .text-button {
@@ -294,6 +308,11 @@ input:focus {
   align-self: end;
 }
 
+.action-buttons {
+  display: grid;
+  gap: 8px;
+}
+
 .dashboard-error {
   margin: 16px 0 0;
 }
@@ -303,11 +322,19 @@ input:focus {
 }
 
 .section-heading {
+  align-items: end;
+  display: flex;
+  gap: 14px;
+  justify-content: space-between;
   margin-bottom: 14px;
 }
 
 .section-heading h2 {
   margin: 0;
+}
+
+.print-button {
+  max-width: 140px;
 }
 
 .entries-list {
@@ -336,7 +363,7 @@ input:focus {
 dl {
   display: grid;
   gap: 10px;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   margin: 0;
 }
 
@@ -379,6 +406,10 @@ dd {
   font-weight: 900;
 }
 
+.print-report {
+  display: none;
+}
+
 @media (min-width: 720px) {
   .auth-panel {
     padding: 38px;
@@ -399,6 +430,10 @@ dd {
   .entry-card {
     align-items: center;
     grid-template-columns: minmax(160px, 1fr) 2fr;
+  }
+
+  dl {
+    grid-template-columns: repeat(4, 1fr);
   }
 }
 
@@ -425,5 +460,61 @@ dd {
 
   dd {
     font-size: 0.92rem;
+  }
+}
+
+@media print {
+  :root,
+  body {
+    background: #ffffff;
+    color: #111111;
+  }
+
+  .navbar,
+  .hero-band,
+  .summary-grid,
+  .history-section,
+  .footer,
+  .dashboard-error {
+    display: none;
+  }
+
+  .app-shell,
+  .dashboard {
+    background: #ffffff;
+    margin: 0;
+    max-width: none;
+    padding: 0;
+  }
+
+  .print-report {
+    display: block;
+    padding: 24px;
+  }
+
+  .print-report h1 {
+    margin: 0 0 4px;
+  }
+
+  .print-report p {
+    margin: 0 0 8px;
+  }
+
+  .print-report table {
+    border-collapse: collapse;
+    margin-top: 18px;
+    width: 100%;
+  }
+
+  .print-report th,
+  .print-report td {
+    border: 1px solid #bbbbbb;
+    font-size: 12px;
+    padding: 8px;
+    text-align: left;
+  }
+
+  .print-report th {
+    background: #eeeeee;
   }
 }
