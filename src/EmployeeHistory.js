@@ -5,7 +5,7 @@ import "./EmployeeHistory.css";
 
 function EmployeeHistory({ employeeId }) {
   const [archivedRecords, setArchivedRecords] = useState([]);
-  const [selectedWeek, setSelectedWeek] = useState("");
+
 
   useEffect(() => {
     if (!employeeId) return;
@@ -25,15 +25,6 @@ function EmployeeHistory({ employeeId }) {
 
     return () => unsubscribe();
   }, [employeeId]);
-
-  const uniqueWeeks =
-    archivedRecords.length > 0
-      ? [...new Set(archivedRecords.map((record) => record.weekStart))]
-      : [];
-
-  const filteredRecords = selectedWeek
-    ? archivedRecords.filter((record) => record.weekStart === selectedWeek)
-    : archivedRecords;
 
   return (
     <div className="employee-list">
