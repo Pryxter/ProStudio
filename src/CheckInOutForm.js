@@ -46,30 +46,6 @@ function CheckInOutForm({ employeeCode }) {
     milliseconds: 0,
   });
 
-  const handleSpecificSubmit = async (e) => {
-    // e.preventDefault();
-    const timeStamp = format(new Date(), "MM-dd-yy").toString();
-    const time = format(dateAtPM, "h:mm:ss aa").toString();
-    const record = { action, timeStamp, time };
-
-    try {
-      const employeeDocRef = doc(db, "employees", employeeId); // Document for individual employee
-      await setDoc(
-        employeeDocRef,
-        {
-          name,
-          records: arrayUnion(record), // Add record to the employee's history
-        },
-        { merge: true } // Merge with existing data
-      );
-      setNotification("Record saved successfully!");
-      showNotification("success");
-    } catch (error) {
-      setNotification("Failed to save record. Please try again.");
-      showNotification("error");
-    }
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     const timeStamp = format(new Date(), "MM-dd-yy").toString();
