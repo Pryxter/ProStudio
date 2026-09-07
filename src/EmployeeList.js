@@ -11,7 +11,6 @@ import {
 import { parse, differenceInMinutes } from "date-fns";
 import db from "./firebaseConfig";
 import "./EmployeeList.css";
-import printJS from "print-js";
 
 function EmployeeList({ employeeId }) {
   const [records, setRecords] = useState([]);
