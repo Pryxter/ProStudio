@@ -1,0 +1,79 @@
+.code-login-container {
+  text-align: center;
+  max-width: 300px;
+  margin: auto;
+}
+.code-login-container h2 {
+  color: #fff;
+}
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 94vh;
+  background: linear-gradient(135deg, #1f0101, #000000);
+  padding: 1rem;
+}
+
+.code-display {
+  font-size: 24px;
+  letter-spacing: 5px;
+  margin-bottom: 10px;
+  padding: 10px;
+  color: #ff0000;
+  border: 2px solid #fff;
+  width: 180px;
+  display: inline-block;
+}
+
+.number-pad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin: 10px 0;
+}
+
+.number-pad button,
+.control-buttons button {
+  font-size: 18px;
+  padding: 15px;
+  cursor: pointer;
+  border: none;
+  background: #b02121;
+  color: white;
+  border-radius: 5px;
+}
+
+.clear-btn {
+  padding: 150px;
+}
+
+.number-pad button:hover,
+.control-buttons button:hover {
+  background: #7b0303;
+}
+
+.control-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.control-buttons button {
+  flex: 1;
+  margin: 0 5px;
+}
+@media (max-width: 600px) {
+  .login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 90vh;
+    background: linear-gradient(135deg, #1f0101, #000000);
+    padding: 1rem;
+  }
+  .welcome_user {
+    color: #000;
+    font-size: 18px;
+  }
+}
