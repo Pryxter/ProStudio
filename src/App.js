@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import CodeLogin from "./Login";
 import CheckInOutForm from "./CheckInOutForm";
 import EmployeeList from "./EmployeeList";
-import EmployeeHistory from "./EmployeeHistory";
 
 function App() {
   const [loggedEmployeeId, setLoggedEmployeeId] = useState(""); // Replace with actual login logic
